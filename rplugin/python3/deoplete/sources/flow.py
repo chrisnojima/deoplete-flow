@@ -25,12 +25,12 @@ class Source(Base):
     def gather_candidates(self, context):
         line = str(self.vim.current.window.cursor[0])
         column = str(self.vim.current.window.cursor[1] + 1)
-        command = [self.flow_bin, 'autocomplete', '--json', '--no-auto-start', line, column]
+        command = [self.flow_bin, 'autocomplete', '--json', line, column]
 
         log.debug(command)
         buf = '\n'.join(self.vim.current.buffer[:])
 
-        process = Popen(command, stdout=PIPE, stdin=PIPE)
+        process = Popen(command, stdout=PIPE, stdin=PIPE, cwd='/Users/chrisnojima/go/src/github.com/keybase/client/shared')
         command_results = process.communicate(input=str.encode(buf))[0]
 
         if process.returncode != 0:
@@ -38,4 +38,4 @@ class Source(Base):
 
         results = json.loads(command_results.decode('utf-8'))
 
-        return [{'word': x['name'], 'kind': x['type']} for x in results['result']] 
+        return [{'word': x['name'], 'kind': x['type']} for x in results['result']]
